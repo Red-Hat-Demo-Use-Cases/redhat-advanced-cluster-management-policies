@@ -22,7 +22,7 @@ metadata:
     policy.open-cluster-management.io/controls: New Tenant Baseline Configuration
 spec:
   remediationAction: enforce
-  disabled: false
+  disabled: true
   
   policy-templates:
 
@@ -40,7 +40,7 @@ spec:
           - "kube-*"
           - "default"
           - "open-cluster-management-*"
-          - "openshift-"
+          - "openshift-*"
           include:
             - "*"
         
@@ -51,6 +51,8 @@ spec:
               apiVersion: networking.k8s.io/v1
               metadata:
                 name: deny-by-default
+                labels:
+                  rulename: deny-by-default
               spec:
                 podSelector: {}
                 ingress: []
