@@ -1,0 +1,31 @@
+
+# openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -sha256 -days 1 -nodes -subj "/C=XX/ST=StateName/L=CityName/O=CompanyName/OU=CompanySectionName/CN=CommonNameOrHostname"
+
+# oc create secret tls expcert --cert=cert.pem --key=key.pem
+
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: policy-flag-expiring-certificate
+  namespace: openshift-acm-policies
+  annotations:
+    policy.open-cluster-management.io/categories: AC Access Control, SC System and Communications Protection
+    policy.open-cluster-management.io/standards: NIST SP 800-53
+    policy.open-cluster-management.io/controls: AC-3 Access Enforcement, SC-8 Transmission Confidentiality and Integrity
+spec:
+  disabled: true
+  remediationAction: inform
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: CertificatePolicy
+        metadata:
+          name: policy-certificate
+        spec:
+          namespaceSelector:
+            include:
+              - *
+          remediationAction: inform
+          severity: medium
+          minimumDuration: 300h
+

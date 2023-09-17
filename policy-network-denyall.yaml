@@ -1,0 +1,91 @@
+# Make sure all namespaces created within the targeted cluster have a DENY ALL ingress networkpolicy.
+# This will deploy:
+#   Policy: openshift-acm-policies:policy-standard-ns-default-networkpolicy
+
+# That policy will ensure musthave of:
+#   NetworkPolicy: deny-by-default 
+#   In all namespace execpt:
+#     - "kube-*"
+#     - "default"
+#     - "open-cluster-management-*"
+#     - "openshift-"
+
+
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: policy-standard-ns-default-networkpolicy
+  namespace: openshift-acm-policies
+  annotations:
+    policy.open-cluster-management.io/standards: Tenants Security
+    policy.open-cluster-management.io/categories: Network Security
+    policy.open-cluster-management.io/controls: New Tenant Baseline Configuration
+spec:
+  remediationAction: enforce
+  disabled: false
+  
+  policy-templates:
+
+  - objectDefinition:
+      apiVersion: policy.open-cluster-management.io/v1
+      kind: ConfigurationPolicy
+      metadata:
+        name: policy-default-ns-np
+      
+      spec:
+        remediationAction: enforce
+        severity: high
+        namespaceSelector:
+          exclude: 
+          - "kube-*"
+          - "default"
+          - "open-cluster-management-*"
+          - "openshift-"
+          include:
+            - "*"
+        
+        object-templates:
+          - complianceType: musthave
+            objectDefinition:    
+              kind: NetworkPolicy
+              apiVersion: networking.k8s.io/v1
+              metadata:
+                name: deny-by-default
+              spec:
+                podSelector: {}
+                ingress: []
+
+    # - objectDefinition:
+    #     apiVersion: policy.open-cluster-management.io/v1
+    #     kind: ConfigurationPolicy
+    #     metadata:
+    #       name: demo-networkpolicy-alltenant
+    #     spec:
+    #       remediationAction: inform
+    #       severity: low
+    #       namespaceSelector:
+    #         exclude:
+    #         - "openshift-"
+    #         include: 
+    #         - "tenant*"
+    #       object-templates:
+
+    #       - complianceType: mustnothave
+    #         objectDefinition:
+
+    #           apiVersion: networking.k8s.io/v1
+    #           kind: NetworkPolicy
+    #           metadata:
+    #             name: all-tenant-default
+    #           spec:
+    #             podSelector:
+    #               matchLabels:
+    #                 app: xyz
+    #             ingress:
+    #               - from:
+    #                   - podSelector:
+    #                       matchLabels:
+    #                         role: abc
+    #                 ports:
+    #                   - protocol: TCP
+    #                     port: 8000

@@ -1,0 +1,51 @@
+---
+apiVersion: cluster.open-cluster-management.io/v1beta2
+kind: ManagedClusterSet
+metadata:
+  name: redhat-demo
+
+---
+apiVersion: policy.open-cluster-management.io/v1beta1
+kind: PolicySet
+metadata:
+  name: redhat-demo
+  namespace: openshift-acm-policies
+spec:
+  description: ""
+  policies:
+    - policy-flag-expiring-certificate
+    - policy-max-clusteradmin-iampolicy
+    - policy-standard-ns-default-networkpolicy
+    - policy-push-enterprise-ca
+
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: redhat-demo-placement
+  namespace: openshift-acm-policies
+spec:
+  clusterSelector:
+    matchExpressions:
+      - key: cluster.open-cluster-management.io/clusterset
+        operator: In
+        values:
+          - "redhat-demo"
+  clusterConditions:
+    - type: ManagedClusterConditionAvailable
+      status: "True"
+
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: redhat-demo-placement
+  namespace: openshift-acm-policies
+placementRef:
+  name: redhat-demo-placement
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+subjects:
+  - name: redhat-demo
+    apiGroup: policy.open-cluster-management.io
+    kind: PolicySet
