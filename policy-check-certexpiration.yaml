@@ -24,7 +24,7 @@ spec:
         spec:
           namespaceSelector:
             include:
-              - *
+              - "*"
           remediationAction: inform
           severity: medium
           minimumDuration: 300h
