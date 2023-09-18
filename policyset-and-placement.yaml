@@ -1,22 +1,22 @@
-# ---
-# apiVersion: cluster.open-cluster-management.io/v1beta2
-# kind: ManagedClusterSet
-# metadata:
-#   name: redhat-demo
+---
+apiVersion: cluster.open-cluster-management.io/v1beta2
+kind: ManagedClusterSet
+metadata:
+  name: redhat-demo
 
-# ---
-# apiVersion: policy.open-cluster-management.io/v1beta1
-# kind: PolicySet
-# metadata:
-#   name: redhat-demo
-#   namespace: openshift-acm-policies
-# spec:
-#   description: ""
-#   policies:
-#     - policy-flag-expiring-certificate
-#     - policy-max-clusteradmin-iampolicy
-#     - policy-standard-ns-default-networkpolicy
-#     - policy-push-enterprise-ca
+---
+apiVersion: policy.open-cluster-management.io/v1beta1
+kind: PolicySet
+metadata:
+  name: redhat-demo
+  namespace: openshift-acm-policies
+spec:
+  description: ""
+  policies:
+    - policy-flag-expiring-certificate
+    - policy-max-clusteradmin-iampolicy
+    - policy-standard-ns-default-networkpolicy
+    - policy-push-enterprise-ca
 
 # ---
 # apiVersion: apps.open-cluster-management.io/v1
