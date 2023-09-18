@@ -22,7 +22,7 @@ metadata:
     policy.open-cluster-management.io/controls: New Tenant Baseline Configuration
 spec:
   remediationAction: enforce
-  disabled: true
+  disabled: false
   
   policy-templates:
 
