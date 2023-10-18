@@ -9,7 +9,7 @@ metadata:
     policy.open-cluster-management.io/standards: Configurations
 spec:
   remediationAction: enforce
-  disabled: true
+  disabled: false
   policy-templates:
 
     - objectDefinition:
