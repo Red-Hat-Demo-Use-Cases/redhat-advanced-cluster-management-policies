@@ -41,6 +41,7 @@ spec:
           - "default"
           - "open-cluster-management-*"
           - "openshift-*"
+          - "rhacs-operator"
           include:
             - "*"
         
