@@ -19,6 +19,9 @@ spec:
     - policy-push-enterprise-ca
     - policy-musthave-ns-xyz
     - policy-acs-secured-cluster
+    - openshift-oauth-policy
+    - openshift-console-identity-policy
+    - acm-poc-role-projet-a-dev-musthave
 
 ---
 apiVersion: apps.open-cluster-management.io/v1
