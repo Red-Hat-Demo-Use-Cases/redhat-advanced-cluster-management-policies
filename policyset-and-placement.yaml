@@ -17,6 +17,7 @@ spec:
     - policy-max-clusteradmin-iampolicy
     - policy-standard-ns-default-networkpolicy
     - policy-push-enterprise-ca
+    - policy-musthave-ns-xyz
 
 ---
 apiVersion: apps.open-cluster-management.io/v1
