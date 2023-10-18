@@ -1,0 +1,179 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: policy-acs-secured-cluster
+  namespace: openshift-acm-policies
+  annotations:
+    policy.open-cluster-management.io/categories: Securité infrastructure
+    policy.open-cluster-management.io/controls: Configurations
+    policy.open-cluster-management.io/standards: Configurations
+spec:
+  remediationAction: enforce
+  disabled: true
+  policy-templates:
+
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: policy-acs-namespace
+        spec:
+          remediationAction: inform
+          severity: low
+          object-templates:
+
+          - complianceType: musthave
+            objectDefinition:
+
+              apiVersion: v1
+              kind: Namespace
+              metadata:
+                labels:
+                  kubernetes.io/metadata.name: stackrox
+                name: stackrox
+              spec:
+                finalizers:
+                - kubernetes
+
+
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: policy-acs-operator
+        spec:
+          remediationAction: inform
+          severity: low
+          object-templates:
+
+          - complianceType: musthave
+            objectDefinition:
+
+              apiVersion: operators.coreos.com/v1alpha1
+              kind: Subscription
+              metadata:
+                labels:
+                  operators.coreos.com/rhacs-operator.openshift-operators: ""
+                name: rhacs-operator
+                namespace: openshift-operators
+              spec:
+                channel: latest
+                installPlanApproval: Automatic
+                name: rhacs-operator
+                source: redhat-operators
+                sourceNamespace: openshift-marketplace
+
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: policy-acs-secret-bundle
+        spec:
+          remediationAction: inform
+          severity: low
+          namespaceSelector:
+            include: 
+            - "stackrox"
+          object-templates:
+
+          - complianceType: musthave
+            objectDefinition:
+
+              apiVersion: v1
+              kind: Secret
+              metadata:
+                annotations:
+                  init-bundle.stackrox.io/created-at: ""
+                  init-bundle.stackrox.io/expires-at: ""
+                  init-bundle.stackrox.io/id: ID
+                  init-bundle.stackrox.io/name: secured-clusters
+                creationTimestamp: null
+                name: collector-tls
+              stringData:
+                ca.pem: |
+                  {{hub fromSecret "stackrox" "collector-tls" "ca.pem" hub}}
+                collector-cert.pem: |
+                  {{hub fromSecret "stackrox" "collector-tls" "collector-cert.pem" hub}}
+                collector-key.pem: |
+                  {{hub fromSecret "stackrox" "collector-tls" "collector-key.pem" hub}}
+
+          - complianceType: musthave
+            objectDefinition:
+
+              apiVersion: v1
+              kind: Secret
+              metadata:
+                annotations:
+                  init-bundle.stackrox.io/created-at: ""
+                  init-bundle.stackrox.io/expires-at: ""
+                  init-bundle.stackrox.io/id: ID
+                  init-bundle.stackrox.io/name: secured-clusters
+                creationTimestamp: null
+                name: sensor-tls
+              stringData:
+                ca.pem: |
+                  {{hub fromSecret "stackrox" "sensor-tls" "ca.pem" hub}}
+                sensor-cert.pem: |
+                  {{hub fromSecret "stackrox" "sensor-tls" "sensor-cert.pem" hub}}
+                sensor-key.pem: |
+                  {{hub fromSecret "stackrox" "sensor-tls" "sensor-key.pem" hub}}
+
+          - complianceType: musthave
+            objectDefinition:
+
+              apiVersion: v1
+              kind: Secret
+              metadata:
+                annotations:
+                  init-bundle.stackrox.io/created-at: ""
+                  init-bundle.stackrox.io/expires-at: ""
+                  init-bundle.stackrox.io/id: ID
+                  init-bundle.stackrox.io/name: secured-clusters
+                creationTimestamp: null
+                name: admission-control-tls
+              stringData:
+                admission-control-cert.pem: |
+                  {{hub fromSecret "stackrox" "admission-control-tls" "admission-control-cert.pem" hub}}
+                admission-control-key.pem: |
+                  {{hub fromSecret "stackrox" "admission-control-tls" "admission-control-key.pem" hub}}
+                ca.pem: |
+                  {{hub fromSecret "stackrox" "admission-control-tls" "ca.pem" hub}}
+
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: policy-acs-secured-cluster-obj
+        spec:
+          remediationAction: inform
+          severity: low
+          namespaceSelector:
+            include: 
+            - "stackrox"
+          object-templates:
+
+          - complianceType: musthave
+            objectDefinition:
+
+              apiVersion: platform.stackrox.io/v1alpha1
+              kind: SecuredCluster
+              metadata:
+                namespace: stackrox
+                name: stackrox-secured-cluster-services
+              spec:
+                clusterName: '{{ (lookup "config.openshift.io/v1" "Infrastructure" "default" "cluster").status.infrastructureName }}'
+                auditLogs:
+                  collection: Auto
+                centralEndpoint: 'central-rhacs-operator.apps.maindeck.fleetcarrier.ca:443'
+                admissionControl:
+                  bypass: BreakGlassAnnotation
+                  contactImageScanners: DoNotScanInline
+                  listenOnCreates: true
+                  listenOnEvents: true
+                  listenOnUpdates: true
+                  timeoutSeconds: 3
+                perNode:
+                  collector:
+                    collection: KernelModule
+                    imageFlavor: Regular
+                  taintToleration: TolerateTaints
