@@ -28,3 +28,4 @@ spec:
           severity: medium # low, medium, or high
           # Maximum number of cluster role binding still valid before it is considered as non-compliant
           maxClusterRoleBindingUsers: 5
+          # ClusterRole: <Optional: Cluster role referenced in the cluster role bindings, default to cluster-admin.>
