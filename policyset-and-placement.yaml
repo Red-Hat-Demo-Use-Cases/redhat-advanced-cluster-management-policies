@@ -18,6 +18,7 @@ spec:
     - policy-standard-ns-default-networkpolicy
     - policy-push-enterprise-ca
     - policy-musthave-ns-xyz
+    - policy-acs-secured-cluster
 
 ---
 apiVersion: apps.open-cluster-management.io/v1
