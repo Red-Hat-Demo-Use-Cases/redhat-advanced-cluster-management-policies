@@ -20,6 +20,10 @@ spec:
         spec:
           remediationAction: enforce
           severity: low
+
+          namespaceSelector:
+            include: ["openshift-compliance"]
+
           object-templates:
             - complianceType: musthave
               objectDefinition:
