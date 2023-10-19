@@ -1,0 +1,89 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: apply-tenant-quota
+  namespace: openshift-acm-policies
+  annotations:
+    policy.open-cluster-management.io/categories: Access Management
+    policy.open-cluster-management.io/standards: Configurations
+    policy.open-cluster-management.io/controls: Configurations
+spec:
+  disabled: false
+  remediationAction: enforce
+  policy-templates:
+    - objectDefinition:
+
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: apply-tenant-quota
+        spec:
+          remediationAction: enforce
+          severity: low
+          namespaceSelector:
+            include:
+              - "tenant-*"
+          object-templates:
+            
+            - complianceType: musthave
+              objectDefinition:
+
+                apiVersion: v1
+                kind: ResourceQuota
+                metadata:
+                  name: core-object-counts
+                spec:
+                  hard:
+                    configmaps: "10" 
+                    persistentvolumeclaims: "4" 
+                    replicationcontrollers: "20" 
+                    secrets: "10" 
+                    services: "10" 
+                    services.loadbalancers: "2"
+
+            - complianceType: musthave
+              objectDefinition:
+                
+                apiVersion: v1
+                kind: ResourceQuota
+                metadata:
+                  name: compute-resources
+                spec:
+                  hard:
+                    pods: "4" 
+                    requests.cpu: "1" 
+                    requests.memory: 1Gi 
+                    limits.cpu: "2" 
+                    limits.memory: 2Gi 
+
+---
+apiVersion: apps.open-cluster-management.io/v1
+kind: PlacementRule
+metadata:
+  name: apply-tenant-quota-placement
+  namespace: openshift-acm-policies
+spec:
+  clusterConditions:
+  - status: "True"
+    type: ManagedClusterConditionAvailable
+  clusterSelector:
+    matchExpressions:
+      - key: managed
+        operator: In
+        values:
+          - "true"
+
+---
+apiVersion: policy.open-cluster-management.io/v1
+kind: PlacementBinding
+metadata:
+  name: apply-tenant-quota-placement-binding
+  namespace: openshift-acm-policies
+placementRef:
+  apiGroup: apps.open-cluster-management.io
+  kind: PlacementRule
+  name: apply-tenant-quota-placement
+subjects:
+- apiGroup: policy.open-cluster-management.io
+  kind: Policy
+  name: apply-tenant-quota

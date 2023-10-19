@@ -22,6 +22,8 @@ spec:
     - openshift-oauth-policy
     - openshift-console-identity-policy
     - acm-poc-role-projet-a-dev-musthave
+    - policy-compliance-operator
+    - apply-tenant-quota
 
 ---
 apiVersion: apps.open-cluster-management.io/v1
