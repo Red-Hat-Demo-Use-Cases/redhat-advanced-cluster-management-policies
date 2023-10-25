@@ -4,7 +4,7 @@ This is a set of RHACM policies intended for use during demonstrations. Don’t 
 
 ## Description of the different policies
 
-### Red Hat Advanced Cluster Security for Kubernetes secured cluster
+### Install RHACS Operator and Spin a Secured Cluster Instance
 ([policy-acs-secured-cluster.yaml](policy-acs-secured-cluster.yaml))
 > **Warning**
 > Prior to add this policy, you will need to add the StackRox cluster init bundle secrets into the hub cluster in namespace: openshift-acm-policies
