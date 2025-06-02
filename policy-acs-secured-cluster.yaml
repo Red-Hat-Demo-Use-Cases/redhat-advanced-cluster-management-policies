@@ -170,7 +170,7 @@ spec:
                 clusterName: '{{ fromClusterClaim "name" | upper }}'
                 auditLogs:
                   collection: Auto
-                centralEndpoint: 'central-rhacs-operator.apps.maindeck.fleetcarrier.ca:443'
+                centralEndpoint: 'central-rhacs-operator.apps.blue.dg-6036.com:443'
                 admissionControl:
                   bypass: BreakGlassAnnotation
                   contactImageScanners: DoNotScanInline

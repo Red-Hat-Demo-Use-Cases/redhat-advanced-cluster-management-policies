@@ -1,0 +1,36 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: policy-identify-cluster-ui-color
+  namespace: openshift-acm-policies
+  annotations:
+    policy.open-cluster-management.io/categories: Security
+    policy.open-cluster-management.io/controls: Configurations
+    policy.open-cluster-management.io/standards: Configurations
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: policy-identify-cluster-ui-color
+        spec:
+          remediationAction: inform
+          severity: low
+          pruneObjectBehavior: DeleteAll
+          object-templates:
+
+          - complianceType: musthave
+            objectDefinition:
+
+              apiVersion: console.openshift.io/v1
+              kind: ConsoleNotification
+              metadata:
+                name: cluster-identification-banner
+              spec:
+                text: 'Cluster {{ fromClusterClaim "name" | upper }}'
+                location: BannerTop
+                color: '#FFFFFF'
+                backgroundColor: '#{{ fromClusterClaim "clustercolor" | upper }}'
